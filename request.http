@@ -1,0 +1,106 @@
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "admin2",
+  "password": "admin2",
+  "name":"Admin"
+}
+
+###
+
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+###
+GET http://localhost:5000/api/auth/all
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmZhNTEzZmYwNWE2NzBjNDRhMjdhMGEiLCJpYXQiOjE2NjA1ODc3Nzd9.BwNbJNxuPAxVi0tFNjKF2XgenqemfOM2wYX-Uezo_TI
+
+###
+GET http://localhost:5000/api/order
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmZhNTEzZmYwNWE2NzBjNDRhMjdhMGEiLCJpYXQiOjE2NjA1ODc3Nzd9.BwNbJNxuPAxVi0tFNjKF2XgenqemfOM2wYX-Uezo_TI
+
+
+###
+POST http://localhost:5000/api/order
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmZhNTEzZmYwNWE2NzBjNDRhMjdhMGEiLCJpYXQiOjE2NjA1ODc3Nzd9.BwNbJNxuPAxVi0tFNjKF2XgenqemfOM2wYX-Uezo_TI
+
+ {
+    "adress": "123 Ta09, Kp7, Thới An Q12",
+    "cart": [{…}, {…}, {…}, {…}],
+    "name": "Nguyễn Văn A",
+    "note": "asdasd",
+    "payment": "Nhận hàng trả tiền",
+    "phone": "0705291118",
+    "shipping": "Ship COD",
+    }
+
+###
+
+POST http://localhost:5000/api/posts
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MDYxYjk1YjdkMjljZTFiMTA5YmQxZTAiLCJpYXQiOjE2MTczNjIxNjV9.ZTwbrIeDpchmUjkNQv_bmBd7_Maw2Gp7Y1ioZx2s7i8
+
+{
+  "title": "React",
+  "description": "React",
+  "url": "react.com",
+  "status": "TO LEARN"
+}
+
+###
+
+GET http://localhost:5000/api/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MDYxYjk1YjdkMjljZTFiMTA5YmQxZTAiLCJpYXQiOjE2MTcwMTk3ODF9.ri-nHdgZc1VQTocFLfMgF4_PhFf2TeUVqXLd8tpOkeA
+
+###
+
+PUT http://localhost:5000/api/posts/6061c25ac2533d41dcae2b19
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MDYxYjk1YjdkMjljZTFiMTA5YmQxZTAiLCJpYXQiOjE2MTcwMTk3ODF9.ri-nHdgZc1VQTocFLfMgF4_PhFf2TeUVqXLd8tpOkeA
+
+{
+  "title": "Vue",
+  "description": "VUEEEEE",
+  "url": "https://vuejs.org",
+  "status": "LEARNING"
+}
+
+###
+
+DELETE http://localhost:5000/api/posts/6061c25ac2533d41dcae2b19
+
+###
+GET http://localhost:5000/api/products/all
+
+###
+
+GET http://localhost:5000/api/products?page=1&limit=12&sort=0
+
+###
+GET http://localhost:5000/api/products/detail?detail=bec-tuoi-chinh-van-cay-cam-40cm-van5000c
+###
+GET http://localhost:5000/api/products/category?page=1&limit=12&sort=0&category=Ống dẫn nước
+
+# Béc tưới cây 46 || cơm 46
+# Tưới nhỏ giọt 45 || cơm 45
+# Súng tưới cây 15 || cơm 15
+# Bộ lọc nước 15 || cơm Bộ lọc nước 15
+# Van điện từ 11 || cơm 11
+# Thiết bị tưới sân vườn 15 || cơm 15
+# Ống dẫn nước 35 || cơm => ống dẫn nước 35
+# Bộ hẹn giờ 29 || cơm 29
+# Phụ kiện tưới 17 || cơm 17
+
+###
+GET http://localhost:5000/api/products/search?page=1&limit=12&sort=0&searchtext=Ống dẫn nước
+
+
+
