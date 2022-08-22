@@ -22,7 +22,7 @@ const convertViToEn = (str, toUpperCase = false) => {
     str = str.replace(/\u02C6|\u0306|\u031B/g, ""); // Â, Ê, Ă, Ơ, Ư
     str = str.replace(/\s/g, '-'); // Â, Ê, Ă, Ơ, Ư
     // console.log(str)
-    return str.substring(1)
+    return str
 }
 
 const storage = multer.diskStorage({
