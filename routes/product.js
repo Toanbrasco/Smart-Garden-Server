@@ -99,6 +99,33 @@ router.get('/', async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })
+// Get Products Random
+router.get('/random', async (req, res) => {
+    const limit = parseInt(req.query.random)
+
+    const pd = await products.find()
+
+    const totalPage = Math.ceil(pd.length / limit)
+    const numRandom = Math.floor(Math.random() * (totalPage - 1) + 1)
+    const startIndex = (numRandom - 1) * limit
+    const endIndex = numRandom * limit
+    try {
+        const results = pd.slice(startIndex, endIndex)
+        res.json({
+            success: true,
+            pagination: {
+                page: numRandom,
+                limit: limit,
+                totalPage: totalPage
+            },
+            data: results
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, message: 'Internal server error' })
+    }
+})
+
 // Get Category
 router.get('/category', async (req, res) => {
     const category = req.query.category

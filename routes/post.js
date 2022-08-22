@@ -2,18 +2,135 @@ const express = require('express')
 const router = express.Router()
 const verifyToken = require('../middleware/auth')
 
-const Post = require('../models/Post')
-const Products = require('../models/Product')
+// const Post = require('../models/Post')
+// const Products = require('../models/Product')
+const Blog = require('../models/blog')
+const Service = require('../models/service')
 
-// @route GET api/posts
-// @desc Get posts
-// @access Private
-router.get('/', verifyToken, async (req, res) => {
+// Get Blog
+router.get('/blog', async (req, res) => {
+	const page = parseInt(req.query.page)
+	const limit = parseInt(req.query.limit)
+
+	const blogs = await Blog.find()
+	const startIndex = (page - 1) * limit
+	const endIndex = page * limit
+
+	const totalPage = Math.ceil(blogs.length / limit)
 	try {
-		const posts = await Post.find({ user: req.userId }).populate('user', [
-			'username'
-		])
-		res.json({ success: true, posts })
+		let results = []
+		if (limit === 0 && page === 0) {
+			results = blogs
+		} else {
+			results = blogs.slice(startIndex, endIndex)
+		}
+		res.json({
+			success: true,
+			pagination:
+			{
+				page: page,
+				limit: limit,
+				totalPage: totalPage
+			},
+			data: results
+		})
+	} catch (error) {
+		console.log(error)
+		res.json({ success: false, message: 'Internal server error' })
+	}
+})
+// Blog Search
+
+router.get('/blog/search', async (req, res) => {
+	const searchText = req.query.searchtext
+	const page = req.query.page
+	const limit = req.query.limit
+
+	const startIndex = (page - 1) * limit
+	const endIndex = page * limit
+	const blogs = await Blog.find()
+
+	const Blogs = blogs.filter((item) => {
+		let reg = new RegExp(searchText, "ig");
+		return item.title.match(reg) != null
+	})
+	const totalPage = Math.ceil(Blogs.length / limit)
+	const results = Blogs.slice(startIndex, endIndex)
+	try {
+		res.json({
+			success: true,
+			pagination: {
+				page: page,
+				limit: limit,
+				totalPage: totalPage
+			},
+			data: results
+		})
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ success: false, message: 'Internal server error' })
+	}
+})
+
+
+// Get Service
+router.get('/service', async (req, res) => {
+	const page = parseInt(req.query.page)
+	const limit = parseInt(req.query.limit)
+
+	const services = await Service.find()
+	const startIndex = (page - 1) * limit
+	const endIndex = page * limit
+
+	const totalPage = Math.ceil(services.length / limit)
+	try {
+		let results = []
+		if (limit === 0 && page === 0) {
+			results = services
+		} else {
+			results = services.slice(startIndex, endIndex)
+		}
+		res.json({
+			success: true,
+			pagination:
+			{
+				page: page,
+				limit: limit,
+				totalPage: totalPage
+			},
+			data: results
+		})
+	} catch (error) {
+		console.log(error)
+		res.json({ success: false, message: 'Internal server error' })
+	}
+})
+// Service Search
+router.get('/service/search', async (req, res) => {
+	const searchText = req.query.searchtext
+	const page = req.query.page
+	const limit = req.query.limit
+
+	const startIndex = (page - 1) * limit
+	const endIndex = page * limit
+	const services = await Service.find()
+
+	const Services = services.filter((item) => {
+		let reg = new RegExp(searchText, "ig");
+		return item.title.match(reg) != null
+	})
+	const totalPage = Math.ceil(Services.length / limit)
+	const results = Services.slice(startIndex, endIndex)
+	try {
+		res.json({
+			success: true,
+			pagination: {
+				page: page,
+				limit: limit,
+				totalPage: totalPage
+			},
+			data: results
+		})
 	} catch (error) {
 		console.log(error)
 		res.status(500).json({ success: false, message: 'Internal server error' })

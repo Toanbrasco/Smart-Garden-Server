@@ -41,7 +41,7 @@ app.use(express.json())
 app.use(cors())
 
 app.use('/api/auth', authRouter)
-// app.use('/api/posts', postRouter)
+app.use('/api/posts', postRouter)
 app.use('/api/products', productsRouter)
 app.use('/api/order', orderRouter)
 // app.use('/api/blogs', blogsRouter)
