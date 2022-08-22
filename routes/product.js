@@ -80,10 +80,14 @@ router.get('/', async (req, res) => {
     const endIndex = page * limit
 
     const totalPage = Math.ceil(pd.length / limit)
-
+    const Product = await sortProduct(sort, pd)
     try {
-        const Product = await sortProduct(sort, pd)
-        const results = Product.slice(startIndex, endIndex)
+        let results = []
+        if (limit === 0 && page === 0) {
+            results = Product
+        } else {
+            results = Product.slice(startIndex, endIndex)
+        }
         // const results = await products.find().limit(limit).skip(startIndex).exec()
         res.json({
             success: true,
