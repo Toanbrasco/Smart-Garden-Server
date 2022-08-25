@@ -27,7 +27,7 @@ const convertViToEn = (str, toUpperCase = false) => {
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'assets/productImage')
+        cb(null, 'assets/images/productImage')
     },
     filename: function (req, file, cb) {
         cb(null, Date.now() + '-' + file.originalname)
@@ -238,6 +238,13 @@ router.get('/search', async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })
+// Test
+router.post('/test', (req, res) => {
+    const { img } = req.body
+    fs.writeFile('.png', base64Image, { encoding: 'base64' }, function (err) {
+        console.log('File created');
+    });
+})
 
 
 // Add
@@ -248,34 +255,23 @@ router.post('/', (req, res) => {
         } else if (err) {
             return res.status(500).json(err)
         }
-        const { name, link, description, price, isPublic, detailInfor, category } = req.body
-        const list = []
-        req.files.forEach(item => {
-            list.push(item.filename)
-        })
-        if (!name)
-            return res
-                .status(400)
-                .json({ success: false, message: 'Title is required' })
-        if (!category)
-            return res
-                .status(400)
-                .json({ success: false, message: 'Category is required' })
-
+        const { images, name, desc, price, isPublic, info, category, type } = req.body
+        const date = new Date()
         try {
             const newProducts = new products({
-                images: [...list],
+                images,
+                desc,
                 name,
-                description,
                 price,
-                link,
                 isPublic,
-                detailInfor,
+                info,
                 category,
+                type,
+                date
             })
             newProducts.save()
 
-            res.json({ success: true, message: 'Add Product Seccess!', post: newProducts })
+            res.json({ success: true, message: 'Thêm sản phẩm thành công' })
         } catch (error) {
             console.log(error)
             res.status(500).json({ success: false, message: 'Internal server error' })
@@ -292,61 +288,48 @@ router.put('/', verifyToken, async (req, res) => {
         } else if (err) {
             return res.status(500).json(err)
         }
-        const { imgOld, id, name, link, detailInfor, isPublic, price, category, description } = req.body
+        const { imgOld, id, name, info, isPublic, price, category, desc, type, } = req.body
         // Simple validation
         if (!name)
-            return res
-                .status(400)
-                .json({ success: false, message: 'Name is required' })
+            return res.json({ success: false, message: 'Không có tên sản phẩm' })
 
-        if (!description)
-            return res
-                .status(400)
-                .json({ success: false, message: 'description is required' })
+        const CheckName = await products.findOne({ name: name })
 
-        if (!category)
-            return res
-                .status(400)
-                .json({ success: false, message: 'category is required' })
+        if (CheckName) {
+            return res.json({ success: false, message: 'Tên sản phẩm đã trùng' })
+        }
 
-        if (!link)
-            return res
-                .status(400)
-                .json({ success: false, message: 'Link is required' })
 
-        let list = []
-        if (imgOld.length > 30) {
-            list.push(imgOld)
+        let imgArr = []
+        if (imgOld.length >= 1) {
+            imgArr.push(imgOld)
         }
         else {
-            list = [...list, ...imgOld]
+            imgArr = [...imgOld]
         }
-        req.files.forEach(item => {
-            list.push(item.filename)
-        })
         try {
             // console.log('img New', req.files)
             let updateProduct = {
-                images: [...list],
+                images: imgArr,
                 name,
-                link,
-                description,
+                desc,
                 price,
                 isPublic,
-                detailInfor,
+                info,
                 category,
+                type
             }
             // console.log(imgOld.length)
             if (imgOld.length > 30) {
                 const reqPath = path.join(__dirname, '../')
-                fs.unlink(reqPath + "/assets/productImage/" + imgOld, function (err) {
+                fs.unlink(reqPath + "/assets/images/" + imgOld, function (err) {
                     if (err) return console.log(err);
                 });
             }
             else {
                 const reqPath = path.join(__dirname, '../')
                 imgOld.forEach(item => {
-                    fs.unlink(reqPath + "/assets/productImage/" + item, function (err) {
+                    fs.unlink(reqPath + "/assets/images/" + item, function (err) {
                         if (err) return console.log(err);
                     });
                 })

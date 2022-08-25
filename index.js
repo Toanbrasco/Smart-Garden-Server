@@ -46,7 +46,7 @@ app.use('/api/products', productsRouter)
 app.use('/api/order', orderRouter)
 // app.use('/api/blogs', blogsRouter)
 // app.use('/api/services', servicesRouter)
-// app.use('/images', imagesRouter)
+app.use('/image', imagesRouter)
 // app.use('/api/payment', paymentRouter)
 
 const PORT = process.env.PORT || 5000

@@ -4,7 +4,7 @@ const Schema = mongoose.Schema
 const imagesSchema = new Schema({
     name: String,
     // image_path: String,
-    created_at: {
+    createdAt: {
         type: Date,
         default: Date.now
     }

@@ -28,32 +28,82 @@ const storage = multer.diskStorage({
     }
 })
 
-const upload = multer({ storage: storage }).single('file')
+const upload = multer({ storage: storage }).array('file')
 
 // Upload
-router.post('/upload', verifyToken, (req, res) => {
+router.post('/', verifyToken, (req, res) => {
     upload(req, res, function (err) {
         if (err instanceof multer.MulterError) {
             return res.status(500).json(err)
         } else if (err) {
             return res.status(500).json(err)
         }
-
+        if (!req.files) {
+            res.json({ success: false, name: req.file.filename, imageMessage: "Không có file Hình nào" })
+            return
+        }
+        let ArrImage = []
+        req.files.forEach((item) => {
+            ArrImage.push(item.filename)
+        })
         try {
-            console.log(req.file)
-            const image = new Images({
-                name: req.file.filename
+            req.files.forEach((item) => {
+                const image = new Images({
+                    name: item.filename
+                })
+                image.save()
             })
-            image.save()
-            res.json({ success: true, message: 'Add Image Seccess!' })
+            res.json({ imageSuccess: true, images: ArrImage })
         } catch (error) {
             console.log(error)
             res.status(500).json({ success: false, message: 'Internal server error' })
         }
     })
     // console.log(req.file)
-
 });
+router.post('/update', verifyToken, (req, res) => {
+    upload(req, res, function (err) {
+        if (err instanceof multer.MulterError) {
+            return res.status(500).json(err)
+        } else if (err) {
+            return res.status(500).json(err)
+        }
+        const ItemNotRemove = oldImage.filter(item => NewImage.includes(item))
+        const { oldImage, NewImage } = req.body
+        const ItemRemove = oldImage.filter(item => !NewImage.includes(item))
+        if (ItemRemove) {
+            ItemRemove.forEach(item => {
+                const find = { name: item }
+                Images.findByIdAndDelete(find)
+                if (!deleteImage)
+                    return res.json({ success: false, message: 'Không tìm thấy hình để xoá' })
+                fs.unlink(reqPath + "/assets/images/" + item, function (err) {
+                    if (err) return console.log(err);
+                });
+            })
+        }
+        if (!req.files) {
+            res.json({ success: true, images: ItemNotRemove, imageMessage: "Không có file Hình nào" })
+            return
+        }
+        let ArrImage = []
+        req.files.forEach((item) => {
+            ArrImage.push(item.filename)
+        })
+        try {
+            req.files.forEach((item) => {
+                const image = new Images({
+                    name: item.filename
+                })
+                image.save()
+            })
+            res.json({ imageSuccess: true, images: [...ArrImage, ...ItemNotRemove] })
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ success: false, message: 'Internal server error' })
+        }
+    })
+})
 
 // Delete
 router.post('/:id', verifyToken, async (req, res) => {
@@ -135,7 +185,7 @@ router.get('/product/:name', (req, res) => {
     try {
         const reqPath = path.join(__dirname, '../')
         const name = req.params.name
-        res.sendFile(reqPath + "/assets/productImage/" + name);
+        res.sendFile(reqPath + "/assets/images/products" + name);
     } catch (error) {
         if (error.code === 'ENOENT') {
             res.status(404).json({ message: 'No such image file' })
