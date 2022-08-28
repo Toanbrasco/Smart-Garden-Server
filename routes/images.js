@@ -29,6 +29,7 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({ storage: storage }).array('file')
+const reqPath = path.join(__dirname, '../')
 
 // Upload
 router.post('/', verifyToken, (req, res) => {
@@ -61,6 +62,8 @@ router.post('/', verifyToken, (req, res) => {
     })
     // console.log(req.file)
 });
+
+// Update
 router.post('/update', verifyToken, (req, res) => {
     upload(req, res, function (err) {
         if (err instanceof multer.MulterError) {
@@ -68,23 +71,30 @@ router.post('/update', verifyToken, (req, res) => {
         } else if (err) {
             return res.status(500).json(err)
         }
-        const ItemNotRemove = oldImage.filter(item => NewImage.includes(item))
-        const { oldImage, NewImage } = req.body
-        const ItemRemove = oldImage.filter(item => !NewImage.includes(item))
+        const { Old, New } = req.body
+        console.log(`=>  req.body`, req.body)
+        const NewImage = New.split(',');
+        const OldImage = Old.split(',');
+        console.log(`=> NewImage`, NewImage)
+        console.log(`=> oldImage`, OldImage)
+        const ItemNotRemove = OldImage.filter(item => NewImage.includes(item))
+        console.log(`NewFile`, req.file)
+        const ItemRemove = OldImage.filter(item => !NewImage.includes(item))
         if (ItemRemove) {
             ItemRemove.forEach(item => {
                 const find = { name: item }
-                Images.findByIdAndDelete(find)
+                const deleteImage = Images.findByIdAndDelete(find)
+                console.log(`=> find`, find)
                 if (!deleteImage)
-                    return res.json({ success: false, message: 'Không tìm thấy hình để xoá' })
+                    return res.json({ success: false, imageMessage: 'Không tìm thấy hình để xoá' })
                 fs.unlink(reqPath + "/assets/images/" + item, function (err) {
                     if (err) return console.log(err);
                 });
             })
         }
         if (!req.files) {
-            res.json({ success: true, images: ItemNotRemove, imageMessage: "Không có file Hình nào" })
-            return
+            return res.json({ success: true, images: ItemNotRemove })
+
         }
         let ArrImage = []
         req.files.forEach((item) => {
@@ -100,37 +110,47 @@ router.post('/update', verifyToken, (req, res) => {
             res.json({ imageSuccess: true, images: [...ArrImage, ...ItemNotRemove] })
         } catch (error) {
             console.log(error)
-            res.status(500).json({ success: false, message: 'Internal server error' })
+            res.status(500).json({ success: false, imageMessage: 'Internal server error' })
         }
     })
 })
 
 // Delete
-router.post('/:id', verifyToken, async (req, res) => {
-    console.log(req.params.id)
+router.post('/delete', verifyToken, async (req, res) => {
+    const { images } = req.body
+    console.log(`=> req.body`, req.body)
+    console.log(`=> images`, images)
     try {
-        const reqPath = path.join(__dirname, '../')
-        const _id = { _id: req.params.id }
-        const deleteImage = await Images.findByIdAndDelete(_id)
-        fs.unlink(reqPath + "/assets/images/" + deleteImage.name, function (err) {
-            if (err) return console.log(err);
-        });
-        if (!deleteImage)
-            return res.status(401).json({
-                success: false,
-                message: 'Server Error'
-            })
+        images.forEach(item => {
+            const find = { name: item }
+            const deleteImage = Images.findByIdAndDelete(find)
+            if (!deleteImage)
+                return res.json({ success: false, imageMessage: 'Không tìm thấy hình để xoá' })
+        })
+        images.forEach(item => {
+            const find = { name: item }
+            const deleteImage = Images.findByIdAndDelete(find)
+            console.log(`=> find`, find)
+            if (!deleteImage)
+                return res.json({ success: false, imageMessage: 'Không tìm thấy hình để xoá' })
+            fs.unlink(reqPath + "/assets/images/" + item, function (err) {
+                if (err) return console.log(err);
+            });
+        }) 
 
-        res.json({ success: true, message: 'Delete Image Seccess!' })
+        res.json({ success: true, imageMessage: 'Delete Image Seccess!' })
     } catch (error) {
         console.log(error)
-        res.status(500).json({ success: false, message: 'Internal server error' })
+        res.json({ success: false, imageMessage: 'Internal server error' })
     }
 })
 
 router.get('/', async (req, res) => {
     try {
         const imagesItem = await Images.find();
+        if (!imagesItem) {
+            res.status(500).json({ success: false, message: 'Internal server error' })
+        }
         res.json({ success: true, imagesItem })
     } catch (error) {
         console.log(error)

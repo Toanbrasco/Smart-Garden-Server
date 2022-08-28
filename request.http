@@ -89,7 +89,9 @@ GET http://localhost:5000/api/products?page=1&limit=12&sort=0
 GET http://localhost:5000/api/products/random?random=4
 
 ###
-GET http://localhost:5000/api/products/detail?detail=bec-tuoi-chinh-van-cay-cam-40cm-van5000c
+GET http://localhost:5000/api/products/detail?detail=63079653ebec7a0f682a488a
+###
+GET http://localhost:5000/api/products/id?id=63079653ebec7a0f682a488a
 ###
 GET http://localhost:5000/api/products/category?page=1&limit=12&sort=0&category=Ống dẫn nước
 

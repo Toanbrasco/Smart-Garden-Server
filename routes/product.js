@@ -201,6 +201,21 @@ router.get('/detail', async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })
+// Get ItemDetail
+router.get('/id', async (req, res) => {
+    const id = req.query.id
+    const pd = await products.find({ _id: id })
+
+    try {
+        res.json({
+            success: true,
+            data: pd
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, message: 'Internal server error' })
+    }
+})
 
 // Get Search
 router.get('/search', async (req, res) => {
@@ -288,29 +303,30 @@ router.put('/', verifyToken, async (req, res) => {
         } else if (err) {
             return res.status(500).json(err)
         }
-        const { imgOld, id, name, info, isPublic, price, category, desc, type, } = req.body
+        const { images, _id, name, info, isPublic, price, category, desc, type, } = req.body
+        console.log(`=> req.body`, req.body)
         // Simple validation
         if (!name)
             return res.json({ success: false, message: 'Không có tên sản phẩm' })
 
         const CheckName = await products.findOne({ name: name })
 
-        if (CheckName) {
+        if (CheckName._id.toString() !== _id) {
             return res.json({ success: false, message: 'Tên sản phẩm đã trùng' })
         }
 
 
-        let imgArr = []
-        if (imgOld.length >= 1) {
-            imgArr.push(imgOld)
-        }
-        else {
-            imgArr = [...imgOld]
-        }
+        // let imgArr = []
+        // if (imgOld.length >= 1) {
+        //     imgArr.push(imgOld)
+        // }
+        // else {
+        //     imgArr = [...imgOld]
+        // }
         try {
             // console.log('img New', req.files)
             let updateProduct = {
-                images: imgArr,
+                images: images,
                 name,
                 desc,
                 price,
@@ -319,37 +335,18 @@ router.put('/', verifyToken, async (req, res) => {
                 category,
                 type
             }
-            // console.log(imgOld.length)
-            if (imgOld.length > 30) {
-                const reqPath = path.join(__dirname, '../')
-                fs.unlink(reqPath + "/assets/images/" + imgOld, function (err) {
-                    if (err) return console.log(err);
-                });
-            }
-            else {
-                const reqPath = path.join(__dirname, '../')
-                imgOld.forEach(item => {
-                    fs.unlink(reqPath + "/assets/images/" + item, function (err) {
-                        if (err) return console.log(err);
-                    });
-                })
-            }
+            const id = { _id: _id }
+            const updateProduct1 = await products.findOneAndUpdate(id, updateProduct)
 
-
-            const _id = { _id: id }
-            console.log('ID:', _id)
-            updateProduct = await products.findOneAndUpdate(_id, updateProduct)
-
-            // User not authorised to update post or post not found
-            if (!updateProduct)
-                return res.status(401).json({
+            if (!updateProduct1)
+                return res.json({
                     success: false,
-                    message: 'Server Error'
+                    message: 'Lỗi Server'
                 })
 
             res.json({
                 success: true,
-                message: 'Edit success !'
+                message: 'Cập nhật thành công'
             })
         } catch (error) {
             console.log(error)
@@ -374,19 +371,14 @@ router.delete('/:id', verifyToken, async (req, res) => {
         const _id = { _id: req.params.id }
         console.log('id:', _id)
         const deletedProduct = await products.findOneAndDelete(_id)
-        const reqPath = path.join(__dirname, '../')
-        deletedProduct.images.forEach(item => {
-            fs.unlink(reqPath + "/assets/productImage/" + item, function (err) {
-                if (err) return console.log(err);
-            });
-        })
+
         if (!deletedProduct)
-            return res.status(401).json({
+            return res.json({
                 success: false,
-                message: 'Server Error'
+                message: 'Không tìm thấy sản phẩm'
             })
 
-        res.json({ success: true, message: 'Delete Product Seccess!', post: deletedProduct })
+        res.json({ success: true, message: 'Xoá sản phẩm thành công' })
     } catch (error) {
         console.log(error)
         res.status(500).json({ success: false, message: 'Internal server error' })
