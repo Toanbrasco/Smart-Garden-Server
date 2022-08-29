@@ -136,7 +136,7 @@ router.post('/delete', verifyToken, async (req, res) => {
             fs.unlink(reqPath + "/assets/images/" + item, function (err) {
                 if (err) return console.log(err);
             });
-        }) 
+        })
 
         res.json({ success: true, imageMessage: 'Delete Image Seccess!' })
     } catch (error) {
@@ -145,13 +145,13 @@ router.post('/delete', verifyToken, async (req, res) => {
     }
 })
 
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
     try {
         const imagesItem = await Images.find();
         if (!imagesItem) {
             res.status(500).json({ success: false, message: 'Internal server error' })
         }
-        res.json({ success: true, imagesItem })
+        res.json({ success: true, data: imagesItem })
     } catch (error) {
         console.log(error)
         res.status(500).json({ success: false, message: 'Internal server error' })
@@ -173,6 +173,9 @@ router.get('/:name', (req, res) => {
     }
 
 })
+
+
+// --------------------------
 router.get('/blog/:name', (req, res) => {
     try {
         const reqPath = path.join(__dirname, '../')

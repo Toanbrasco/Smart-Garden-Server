@@ -27,8 +27,8 @@ router.get('/', async (req, res) => {
         const blogItem = await Blog.find()
         console.log('Get blog')
         // res.setHeader('Content-Type', 'text/plain');
-        count += 1
-        res.setHeader('Content-Type', 'text/plain');
+        // count += 1
+        // res.setHeader('Content-Type', 'text/plain');
         return res.json({ success: true, blogItem })
     } catch (error) {
         console.log(error)

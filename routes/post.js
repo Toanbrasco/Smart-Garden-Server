@@ -22,6 +22,7 @@ const convertViToEn = (str, toUpperCase = false) => {
 	// console.log(str)
 	return str
 }
+//------------------------------------------------------------------------------
 // Get Blog
 router.get('/blog', async (req, res) => {
 	const page = parseInt(req.query.page)
@@ -54,74 +55,6 @@ router.get('/blog', async (req, res) => {
 		res.json({ success: false, message: 'Internal server error' })
 	}
 })
-// Blog Search
-
-router.get('/blog/search', async (req, res) => {
-	const searchText = req.query.searchtext
-	const page = req.query.page
-	const limit = req.query.limit
-
-	const startIndex = (page - 1) * limit
-	const endIndex = page * limit
-	const blogs = await Blog.find()
-
-	const Blogs = blogs.filter((item) => {
-		let reg = new RegExp(searchText, "ig");
-		return item.title.match(reg) != null
-	})
-	const totalPage = Math.ceil(Blogs.length / limit)
-	const results = Blogs.slice(startIndex, endIndex)
-	try {
-		res.json({
-			success: true,
-			pagination: {
-				page: page,
-				limit: limit,
-				totalPage: totalPage
-			},
-			data: results
-		})
-	} catch (error) {
-		console.log(error)
-		res.status(500).json({ success: false, message: 'Internal server error' })
-	}
-})
-
-// Blog Detail
-router.get('/blog/detail', async (req, res) => {
-	const detail = req.query.detail
-	const blogs = await Blog.find()
-	const Blogs = blogs.filter((item) => { return convertViToEn(item.title) === detail })
-
-	// console.log(`productCategory`, productCategory.length, `newCategory`, newCategory.length, 'totalPage', totalPage, 'numRandom', numRandom, 'startIndex', startIndex, 'endIndex', endIndex)
-	try {
-		res.json({
-			success: true,
-			data: Blogs
-		})
-	} catch (error) {
-		console.log(error)
-		res.status(500).json({ success: false, message: 'Internal server error' })
-	}
-})
-// Service Detail
-router.get('/service/detail', async (req, res) => {
-	const detail = req.query.detail
-	const services = await Service.find()
-	const Services = services.filter((item) => { return convertViToEn(item.title) === detail })
-
-	// console.log(`productCategory`, productCategory.length, `newCategory`, newCategory.length, 'totalPage', totalPage, 'numRandom', numRandom, 'startIndex', startIndex, 'endIndex', endIndex)
-	try {
-		res.json({
-			success: true,
-			data: Services
-		})
-	} catch (error) {
-		console.log(error)
-		res.status(500).json({ success: false, message: 'Internal server error' })
-	}
-})
-
 // Get Service
 router.get('/service', async (req, res) => {
 	const page = parseInt(req.query.page)
@@ -152,6 +85,74 @@ router.get('/service', async (req, res) => {
 	} catch (error) {
 		console.log(error)
 		res.json({ success: false, message: 'Internal server error' })
+	}
+})
+
+//------------------------------------------------------------------------------
+// Blog Detail
+router.get('/blog/:id', async (req, res) => {
+	const id = req.query.id
+	const blogs = await Blog.find({ _id: id })
+
+	// console.log(`productCategory`, productCategory.length, `newCategory`, newCategory.length, 'totalPage', totalPage, 'numRandom', numRandom, 'startIndex', startIndex, 'endIndex', endIndex)
+	try {
+		res.json({
+			success: true,
+			data: blogs
+		})
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ success: false, message: 'Internal server error' })
+	}
+})
+
+// Service Detail
+router.get('/service/:id', async (req, res) => {
+	const id = req.query.id
+	const services = await Service.find({ _id: id })
+
+	// console.log(`productCategory`, productCategory.length, `newCategory`, newCategory.length, 'totalPage', totalPage, 'numRandom', numRandom, 'startIndex', startIndex, 'endIndex', endIndex)
+	try {
+		res.json({
+			success: true,
+			data: services
+		})
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ success: false, message: 'Internal server error' })
+	}
+})
+
+//------------------------------------------------------------------------------
+// Blog Search
+router.get('/blog/search', async (req, res) => {
+	const searchText = req.query.searchtext
+	const page = req.query.page
+	const limit = req.query.limit
+
+	const startIndex = (page - 1) * limit
+	const endIndex = page * limit
+	const blogs = await Blog.find()
+
+	const Blogs = blogs.filter((item) => {
+		let reg = new RegExp(searchText, "ig");
+		return item.title.match(reg) != null
+	})
+	const totalPage = Math.ceil(Blogs.length / limit)
+	const results = Blogs.slice(startIndex, endIndex)
+	try {
+		res.json({
+			success: true,
+			pagination: {
+				page: page,
+				limit: limit,
+				totalPage: totalPage
+			},
+			data: results
+		})
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ success: false, message: 'Internal server error' })
 	}
 })
 // Service Search
@@ -186,110 +187,150 @@ router.get('/service/search', async (req, res) => {
 	}
 })
 
-// @route POST api/posts
-// @desc Create post
-// @access Private
-router.post('/', verifyToken, async (req, res) => {
-	const { name, description, price, showItem, detailInfor, category } = req.body
+//------------------------------------------------------------------------------
+// Add Blog
+router.post('/blog', verifyToken, async (req, res) => {
+	const { title, desc, content, isPublic, image } = req.body
+	console.log(`=>  req.body`, req.body)
 	// Simple validation
-	if (!name)
-		return res
-			.status(400)
-			.json({ success: false, message: 'Title is required' })
-	if (!category)
-		return res
-			.status(400)
-			.json({ success: false, message: 'Category is required' })
+	if (!title)
+		return res.json({ success: false, message: 'Thiếu tên bài viết' })
+	if (!desc)
+		return res.json({ success: false, message: 'Thiếu mô tả bài viết' })
 
 	try {
-		const newProducts = new Products({
-			images: ['https://via.placeholder.com/500x500.png/09f/fffC/O',
-				'https://via.placeholder.com/500x500.png/09f/fffC/O'],
-			name,
-			description,
-			price,
-			showItem,
-			detailInfor: { ...detailInfor, "name": name },
-			category,
+		const newBlog = new Blog({
+			image,
+			title,
+			desc,
+			content,
+			isPublic
 		})
-		await newProducts.save()
+		await newBlog.save()
 
-		res.json({ success: true, message: 'Add Product Seccess!', post: newProducts })
+		res.json({ success: true, message: 'Thêm bài viết thành công' })
 	} catch (error) {
 		console.log(error)
 		res.status(500).json({ success: false, message: 'Internal server error' })
 	}
 })
 
-// @route PUT api/posts
-// @desc Update post
-// @access Private
-router.put('/:id', verifyToken, async (req, res) => {
-	const { name, images, description, price, showItem, detailInfor, category } = req.body
-
+// Add Service
+router.post('/service', verifyToken, async (req, res) => {
+	const { title, desc, content, isPublic, image } = req.body
 	// Simple validation
-	if (!name)
-		return res
-			.status(400)
-			.json({ success: false, message: 'Title is required' })
-	if (!category)
-		return res
-			.status(400)
-			.json({ success: false, message: 'Category is required' })
+	if (!title)
+		return res.json({ success: false, message: 'Thiếu tên dịch vụ' })
+	if (!desc)
+		return res.json({ success: false, message: 'Thiếu mô tả dịch vụ' })
 
 	try {
-		let updateProduct = {
-			images: [...images],
-			name,
-			description,
-			price,
-			showItem,
-			detailInfor: { ...detailInfor },
-			category,
-		}
-		console.log(updateProduct)
-		const id = { _id: req.params.id }
+		const newService = new Service({
+			images: image || [],
+			title,
+			desc,
+			content,
+			isPublic
+		})
+		await newService.save()
 
-		updateProduct = await Products.findOneAndUpdate(id,
-			updateProduct
-			// { new: true }
-		)
+		res.json({ success: true, message: 'Thêm dịch vụ thành công' })
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ success: false, message: 'Internal server error' })
+	}
+})
+
+//------------------------------------------------------------------------------
+
+// Update Blog
+router.put('/blog', verifyToken, async (req, res) => {
+	const { _id, title, image, desc, content, isPublic } = req.body
+	console.log(`=> req.body`, req.body)
+
+	// Simple validation
+	if (!title)
+		return res.json({ success: false, message: 'Thiếu tên bài viết' })
+
+	try {
+		let updateBlog = {
+			image,
+			title,
+			desc,
+			content,
+			isPublic
+		}
+		const id = { _id: _id }
+
+		const UpdateBlog = await Blog.findOneAndUpdate(id, updateBlog)
 
 		// User not authorised to update post or post not found
-		if (!updateProduct)
-			return res.status(401).json({
-				success: false,
-				message: 'Server Error'
-			})
+		if (!UpdateBlog)
+			return res.json({ success: false, message: 'Không tìm thấy bài viết' })
 
-		res.json({
-			success: true,
-			message: 'Excellent progress!',
-			post: updateProduct
-		})
+		res.json({ success: true, message: 'Cập nhật bài viết thành công' })
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ success: false, message: 'Internal server error' })
+	}
+})
+// Update Service
+router.put('/service', verifyToken, async (req, res) => {
+	const { _id, title, image, desc, content, isPublic } = req.body
+
+	// Simple validation
+	if (!title)
+		return res.json({ success: false, message: 'Thiếu tên dịch vụ' })
+
+	try {
+		let updateService = {
+			image,
+			title,
+			desc,
+			content,
+			isPublic
+		}
+		const id = { _id: _id }
+
+		const UpdateService = await Service.findOneAndUpdate(id, updateService)
+
+		// User not authorised to update post or post not found
+		if (!UpdateService)
+			return res.json({ success: false, message: 'Không tìm thấy dịch vụ' })
+
+		res.json({ success: true, message: 'Cập nhật dịch vụ thành công' })
 	} catch (error) {
 		console.log(error)
 		res.status(500).json({ success: false, message: 'Internal server error' })
 	}
 })
 
-// @route DELETE api/posts
-// @desc Delete post
-// @access Private
-router.delete('/:id', verifyToken, async (req, res) => {
+//------------------------------------------------------------------------------
+// Delete Blog
+router.delete('/blog/:id', verifyToken, async (req, res) => {
 	try {
-		const _id = { _id: req.params.id }
-		console.log('id:', _id)
-		const deletedProduct = await Products.findOneAndDelete(_id)
-		console.log(deletedProduct)
+		const id = { _id: req.params.id }
+		const deleteBlog = await Blog.findOneAndDelete(id)
 		// User not authorised or post not found
-		if (!deletedProduct)
-			return res.status(401).json({
-				success: false,
-				message: 'Server Error'
-			})
+		if (!deleteBlog)
+			return res.json({ success: false, message: 'Không tìm thấy bài viết cần xoá' })
 
-		res.json({ success: true, message: 'Delete Product Seccess!', post: deletedProduct })
+		res.json({ success: true, message: 'Xoá bài viết thành công' })
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ success: false, message: 'Internal server error' })
+	}
+})
+// Delete Service
+router.delete('/service/:id', verifyToken, async (req, res) => {
+	try {
+		const id = { _id: req.params.id }
+		const deleteService = await Service.findOneAndDelete(id)
+
+		if (!deleteService)
+			return res.json({ success: false, message: 'Không tìm thấy dịch vụ cần xoá' })
+
+		res.json({ success: true, message: 'Xoá dịch vụ thành công' })
 	} catch (error) {
 		console.log(error)
 		res.status(500).json({ success: false, message: 'Internal server error' })

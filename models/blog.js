@@ -7,11 +7,10 @@ const blogSchema = new Schema({
     content: String,
     desc: String,
     isPublic: Boolean,
-    createdAt: Date
-    //  {
-    //     type: Date,
-    //     default: Date.now
-    // },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
 })
 
 module.exports = mongoose.model('blogs', blogSchema);
