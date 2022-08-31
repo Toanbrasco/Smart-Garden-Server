@@ -194,14 +194,14 @@ router.get('/detail', async (req, res) => {
         res.json({
             success: true,
             data: product,
-            data2: newCategory
+            data2: newCategory 
         })
     } catch (error) {
         console.log(error)
         res.status(500).json({ success: false, message: 'Internal server error' })
     }
 })
-// Get ItemDetail
+// Get ItemDetail id
 router.get('/id', async (req, res) => {
     const id = req.query.id
     const pd = await products.find({ _id: id })

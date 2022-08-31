@@ -109,4 +109,6 @@ GET http://localhost:5000/api/products/category?page=1&limit=12&sort=0&category=
 GET http://localhost:5000/api/products/search?page=1&limit=12&sort=0&searchtext=Ống dẫn nước
 
 
+###
+Get http://localhost:5000/api/posts/blog/detail?detail=lam-the-nao-de-lua-chon-mot-mo-hinh-tuoi-phu-hop-va-that-su-hieu-qua
 

@@ -111,7 +111,7 @@ router.post('/update', verifyToken, (req, res) => {
         } catch (error) {
             console.log(error)
             res.status(500).json({ success: false, imageMessage: 'Internal server error' })
-        }
+        } 
     })
 })
 

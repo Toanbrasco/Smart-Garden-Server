@@ -89,25 +89,62 @@ router.get('/service', async (req, res) => {
 })
 
 //------------------------------------------------------------------------------
-// Blog Detail
-router.get('/blog/:id', async (req, res) => {
-	const id = req.query.id
-	const blogs = await Blog.find({ _id: id })
+
+
+
+// get Blog Detail Name
+router.get('/blog/detail', async (req, res) => {
+	const detail = req.query.detail
+	const Blogs = await Blog.find()
+	const blog = Blogs.filter((item) => { return convertViToEn(item.title) === detail })
+
 
 	// console.log(`productCategory`, productCategory.length, `newCategory`, newCategory.length, 'totalPage', totalPage, 'numRandom', numRandom, 'startIndex', startIndex, 'endIndex', endIndex)
 	try {
 		res.json({
 			success: true,
-			data: blogs
+			data: blog
 		})
 	} catch (error) {
 		console.log(error)
 		res.status(500).json({ success: false, message: 'Internal server error' })
 	}
 })
+// Blog Detail ID
+router.get('/blog/:id', verifyToken, async (req, res) => {
+	const id = req.query.id
+	const blog = await Blog.find({ _id: id })
 
+	// console.log(`productCategory`, productCategory.length, `newCategory`, newCategory.length, 'totalPage', totalPage, 'numRandom', numRandom, 'startIndex', startIndex, 'endIndex', endIndex)
+	try {
+		res.json({
+			success: true,
+			data: blog
+		})
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ success: false, message: 'Internal server error' })
+	}
+})
+// Get Service Detail Id
+router.get('/service/detail', async (req, res) => {
+	const detail = req.query.detail
+	const Services = await Service.find()
+	const service = Services.filter((item) => { return convertViToEn(item.title) === detail })
+
+	// console.log(`productCategory`, productCategory.length, `newCategory`, newCategory.length, 'totalPage', totalPage, 'numRandom', numRandom, 'startIndex', startIndex, 'endIndex', endIndex)
+	try {
+		res.json({
+			success: true,
+			data: service
+		})
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ success: false, message: 'Internal server error' })
+	}
+})
 // Service Detail
-router.get('/service/:id', async (req, res) => {
+router.get('/service/:id', verifyToken, async (req, res) => {
 	const id = req.query.id
 	const services = await Service.find({ _id: id })
 
@@ -122,6 +159,7 @@ router.get('/service/:id', async (req, res) => {
 		res.status(500).json({ success: false, message: 'Internal server error' })
 	}
 })
+
 
 //------------------------------------------------------------------------------
 // Blog Search
