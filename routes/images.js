@@ -111,7 +111,7 @@ router.post('/update', verifyToken, (req, res) => {
         } catch (error) {
             console.log(error)
             res.status(500).json({ success: false, imageMessage: 'Internal server error' })
-        } 
+        }
     })
 })
 
@@ -144,6 +144,27 @@ router.post('/delete', verifyToken, async (req, res) => {
         res.json({ success: false, imageMessage: 'Internal server error' })
     }
 })
+
+router.delete('/:id', verifyToken, async (req, res) => {
+    try {
+        const id = { _id: req.params.id }
+        const deleteImage = await Images.findByIdAndDelete(id)
+        console.log(`=> id`, id)
+
+        if (!deleteImage)
+            return res.json({ success: false, imageMessage: 'Không tìm thấy hình để xoá' })
+
+        fs.unlink(reqPath + "/assets/images/" + item, function (err) {
+            if (err) return console.log(err);
+        });
+
+        res.json({ success: true, imageMessage: 'Delete Image Seccess!' })
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, imageMessage: 'Internal server error' })
+    }
+})
+// Get ALl
 
 router.get('/', verifyToken, async (req, res) => {
     try {

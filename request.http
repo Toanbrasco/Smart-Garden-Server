@@ -112,3 +112,6 @@ GET http://localhost:5000/api/products/search?page=1&limit=12&sort=0&searchtext=
 ###
 Get http://localhost:5000/api/posts/blog/detail?detail=lam-the-nao-de-lua-chon-mot-mo-hinh-tuoi-phu-hop-va-that-su-hieu-qua
 
+###
+GET http://localhost:5000/api/config
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmZhNTEzZmYwNWE2NzBjNDRhMjdhMGEiLCJpYXQiOjE2NjE5NTU3Njh9.LvbM_j5RkyZdmM8k1F1KMVMsQ4Z35aH55hdhCqh7icI

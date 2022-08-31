@@ -9,7 +9,7 @@ const productsRouter = require('./routes/product')
 const imagesRouter = require('./routes/images')
 const blogsRouter = require('./routes/blog')
 const servicesRouter = require('./routes/service')
-const paymentRouter = require('./routes/payment')
+const configRouter = require('./routes/config')
 const orderRouter = require('./routes/order')
 
 const urlLocal = 'mongodb://127.0.0.1:27017/SmartGarden'
@@ -47,7 +47,7 @@ app.use('/api/order', orderRouter)
 // app.use('/api/blogs', blogsRouter)
 // app.use('/api/services', servicesRouter)
 app.use('/image', imagesRouter)
-// app.use('/api/payment', paymentRouter)
+app.use('/api/config', configRouter)
 
 const PORT = process.env.PORT || 5000
 
