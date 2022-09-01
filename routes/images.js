@@ -54,7 +54,7 @@ router.post('/', verifyToken, (req, res) => {
                 })
                 image.save()
             })
-            res.json({ imageSuccess: true, images: ArrImage })
+            res.json({ imageSuccess: true, images: ArrImage, imageMessage: "Thêm ảnh thành công" })
         } catch (error) {
             console.log(error)
             res.status(500).json({ success: false, message: 'Internal server error' })
@@ -131,8 +131,10 @@ router.post('/delete', verifyToken, async (req, res) => {
             const find = { name: item }
             const deleteImage = Images.findByIdAndDelete(find)
             console.log(`=> find`, find)
-            if (!deleteImage)
+            if (!deleteImage) {
                 return res.json({ success: false, imageMessage: 'Không tìm thấy hình để xoá' })
+            }
+
             fs.unlink(reqPath + "/assets/images/" + item, function (err) {
                 if (err) return console.log(err);
             });
