@@ -110,7 +110,7 @@ router.post('/login', async (req, res) => {
 
 		res.json({
 			success: true,
-			message: 'Người dùng đăng nhặp thành công',
+			message: 'Đăng nhặp thành công',
 			name: user.name,
 			accessToken
 		})
